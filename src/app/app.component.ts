@@ -12,7 +12,7 @@ const postsUrl = 'https://udemy-httpee.firebaseio.com/posts.json'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  loadedPosts = [];
+  loadedPosts: Post[] = []
 
   // inject HttpClient in order to be able to use it
   constructor(private http: HttpClient) {}
@@ -22,8 +22,7 @@ export class AppComponent implements OnInit {
   }
 
   onCreatePost(postData: { title: string; content: string }) {
-    // Send Http request, "http" from line 15
-    this.http
+    this.http // http from line 15
       // endpoint, body. Angular converts postData into JSON data
       .post(postsUrl, postData)
       // if you are not subscribing tot the http request, the request will not be sent
@@ -32,9 +31,7 @@ export class AppComponent implements OnInit {
   }
 
   onFetchPosts() {
-    // Send Http request
-    this.fetchPosts()
-    
+    this.fetchPosts() 
   }
 
   private fetchPosts() {
@@ -50,7 +47,7 @@ export class AppComponent implements OnInit {
       }
       return postsArray
     }))
-    .subscribe(posts => console.log(posts))
+    .subscribe(posts => this.loadedPosts = posts)
   }
 
   onClearPosts() {
