@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
-import { map } from 'rxjs/operators'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { map, catchError } from 'rxjs/operators'
 import { Post } from './post.model';
-import { Subject } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 
 const postsUrl = 'https://udemy-httpee.firebaseio.com/posts.json'
 
@@ -29,17 +29,23 @@ export class PostService {
     fetchPosts() {
         // instead of sending the request here, we will return it, and subscribe to it in the app component
         return this.http
-        .get<{[key: string]: Post}>(postsUrl) // we can define the type of the response in the get method or in the map func
+        .get<{[key: string]: Post}>(
+            postsUrl, 
+            { 
+                headers: new HttpHeaders({ 'Custom-Headers': 'Hello' })
+            }) // we can define the type of the response in the get method or in the map func
         .pipe(map(responseData => {
-        const postsArray: Post[] = []
-        for (let key in responseData) {
-        // spread operator to include nested objects
-        if (key in responseData) {
-          postsArray.push({...responseData[key], id: key})
-        } 
-      }
-      return postsArray
-    }))
+            const postsArray: Post[] = []
+            for (let key in responseData) {
+                // spread operator to include nested objects
+                if (key in responseData) {
+                    postsArray.push({...responseData[key], id: key})
+                } 
+            }
+            return postsArray
+        }),
+        catchError(error => throwError(error))
+        )
     }
 
     deletePosts() {
