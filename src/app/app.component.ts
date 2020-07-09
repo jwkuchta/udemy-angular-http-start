@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators'
+import { Post } from './post.model';
+
+const postsUrl = 'https://udemy-httpee.firebaseio.com/posts.json'
+
 
 @Component({
   selector: 'app-root',
@@ -9,24 +14,43 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent implements OnInit {
   loadedPosts = [];
 
+  // inject HttpClient in order to be able to use it
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchPosts()
+  }
 
   onCreatePost(postData: { title: string; content: string }) {
-    // Send Http request
+    // Send Http request, "http" from line 15
     this.http
-      .post(
-        'https://ng-complete-guide-c56d3.firebaseio.com/posts.json',
-        postData
+      // endpoint, body. Angular converts postData into JSON data
+      .post(postsUrl, postData)
+      // if you are not subscribing tot the http request, the request will not be sent
+      .subscribe(responseData => console.log(responseData)
       )
-      .subscribe(responseData => {
-        console.log(responseData);
-      });
   }
 
   onFetchPosts() {
     // Send Http request
+    this.fetchPosts()
+    
+  }
+
+  private fetchPosts() {
+    this.http
+    .get<{[key: string]: Post}>(postsUrl) // we can define the type of the response in the get method or in the map func
+    .pipe(map(responseData => {
+      const postsArray: Post[] = []
+      for (let key in responseData) {
+        // spread operator to include nested objects
+        if (key in responseData) {
+          postsArray.push({...responseData[key], id: key})
+        } 
+      }
+      return postsArray
+    }))
+    .subscribe(posts => console.log(posts))
   }
 
   onClearPosts() {

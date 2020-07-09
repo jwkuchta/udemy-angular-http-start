@@ -12,3 +12,5 @@ import { AppComponent } from './app.component';
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+
+// add HttpClientModule to send and receive http requests
