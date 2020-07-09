@@ -2,12 +2,15 @@ import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { map } from 'rxjs/operators'
 import { Post } from './post.model';
+import { Subject } from 'rxjs';
 
 const postsUrl = 'https://udemy-httpee.firebaseio.com/posts.json'
 
 @Injectable({providedIn: 'root'})
 export class PostService {
     // we will move the http requests here and only display responses in the front end
+    // if we have multiple places in the app that need to know about errors, it's better to do the following:
+    error = new Subject<string>()
 
     constructor(private http: HttpClient) {}
 
@@ -17,7 +20,9 @@ export class PostService {
       // endpoint, body. Angular converts postData into JSON data
       .post(postsUrl, postData)
       // if you are not subscribing tot the http request, the request will not be sent
-      .subscribe(responseData => console.log(responseData)
+      .subscribe(
+          responseData => console.log(responseData),
+          error => this.error.next(error)
       )
     }
 
