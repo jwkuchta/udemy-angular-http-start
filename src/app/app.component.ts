@@ -13,12 +13,15 @@ const postsUrl = 'https://udemy-httpee.firebaseio.com/posts.json'
 })
 export class AppComponent implements OnInit {
   loadedPosts: Post[] = []
+  isFetching = false
 
   // inject HttpClient in order to be able to use it
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
+    this.isFetching = true
     this.fetchPosts()
+    this.isFetching = false
   }
 
   onCreatePost(postData: { title: string; content: string }) {
@@ -28,10 +31,13 @@ export class AppComponent implements OnInit {
       // if you are not subscribing tot the http request, the request will not be sent
       .subscribe(responseData => console.log(responseData)
       )
+      this.isFetching = false
   }
 
   onFetchPosts() {
+    this.isFetching = true
     this.fetchPosts() 
+    this.isFetching = false
   }
 
   private fetchPosts() {
