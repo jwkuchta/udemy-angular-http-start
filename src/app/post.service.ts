@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http'
+import { HttpClient, HttpHeaders, HttpParams, HttpEventType } from '@angular/common/http'
 import { map, catchError, tap } from 'rxjs/operators'
 import { Post } from './post.model';
 import { Subject, throwError } from 'rxjs';
@@ -59,7 +59,8 @@ export class PostService {
         return this.http.delete(
             postsUrl,
             {
-                observe: 'events'
+                observe: 'events',
+                responseType: 'text' // default is json, could also be a blob, etc
             }
         ).pipe(tap(event => console.log(event)))
     }
